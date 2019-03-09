@@ -14,10 +14,18 @@ from scipy import ndimage
 img1 = cv2.imread('jean-moral//jean-moral_6_p.jpg',0)
 img2 = cv2.imread('jean-moral//jean-moral_2_p.jpg',0)#9
 N,M = img1.shape
-plt.imshow(img1,cmap='gray')
-plt.show()
-plt.imshow(img2,cmap='gray')
-plt.show()
+
+newImage = np.hstack((img1, img2))#hstack et vstack
+
+def disp(im,title=""):
+    height, width = im.shape[:2]
+    cv2.namedWindow(title,cv2.WINDOW_NORMAL)
+    cv2.resizeWindow(title, width//2, height//2)
+    cv2.imshow(title, im)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    
+disp(newImage,"Deux images")
 #%% Identifier les keypoints et les matcher
 
 # Initiate SIFT detector
@@ -37,11 +45,9 @@ matches = bf.match(des1,des2)
 matches = sorted(matches, key = lambda x:x.distance)
 
 # Draw first 10 matches.
-img3 = cv2.drawMatches(img1,kp1,img2,kp2,matches[:4],matchColor=[0,255,0],outImg=img1, flags=2)
+img3 = cv2.drawMatches(img1,kp1,img2,kp2,matches[:10],matchColor=[0,255,0],outImg=img1, flags=2)
 
-plt.figure(figsize=(10,10))
-plt.imshow(img3)
-plt.show()
+disp(img3)
 
 # Initialize lists
 list_kp1 = []
@@ -71,7 +77,7 @@ H_inv = np.linalg.inv(H)
 
 rows,cols = img2.shape
 dst = cv2.warpPerspective(img2,H_inv,(cols,rows))
-plt.imshow(dst,cmap='gray')
+disp(dst)
 
 #%% On les recalle toutes
 #file : nom du grand fichier et des minis
@@ -129,16 +135,11 @@ def recalage(show=False):
         rows,cols = img.shape
         dst = cv2.warpPerspective(img,H_inv,(cols,rows))
         if show:
-            f, (ax1, ax2, ax3) = plt.subplots(1, 3, sharey=True)
-            ax1.imshow(img,cmap='gray')
-            ax1.set_title('Before')
-            ax2.imshow(dst,cmap='gray')
-            ax2.set_title('After')
-            ax3.imshow(img_base,cmap='gray')
-            ax3.set_title('Base')
-            plt.show()
+            
+            img_f = np.hstack((img,dst,img_base))
+            disp(img_f,"Recalage :" + str(i))
+            
         L_rec.append(dst)
     return(L_rec)
         
 recalage(True)
-        
