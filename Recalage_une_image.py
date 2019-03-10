@@ -12,20 +12,20 @@ from scipy import ndimage
 
 #%% Récupérer l'image de base et l'image à recaler
 img1 = cv2.imread('jean-moral//jean-moral_6_p.jpg',0)
-img2 = cv2.imread('jean-moral//jean-moral_2_p.jpg',0)#9
+img2 = cv2.imread('jean-moral//jean-moral_2_p.jpg',0)
 N,M = img1.shape
 
 newImage = np.hstack((img1, img2))#hstack et vstack
 
-def disp(im,title=""):
+def disp(im,title="",ratio=2):
     height, width = im.shape[:2]
     cv2.namedWindow(title,cv2.WINDOW_NORMAL)
-    cv2.resizeWindow(title, width//2, height//2)
+    cv2.resizeWindow(title, width//ratio, height//ratio)
     cv2.imshow(title, im)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     
-disp(newImage,"Deux images")
+disp(newImage,"Deux images",ratio=4)
 #%% Identifier les keypoints et les matcher
 
 # Initiate SIFT detector
@@ -120,14 +120,13 @@ def find_key_points(img1,img2):
     
     return([list_kp1,list_kp2])
     
-I = [2,3,4,5,7,8,9]
 
-def recalage(show=False):
+def recalage(filename,I,base_nb=1,show=False,ratio=2):
     L_rec=[]
-    img_base = cv2.imread('jean-moral//jean-moral_6_p.jpg',0)
+    img_base = cv2.imread(filename+'//'+filename+"_"+str(base_nb)+".jpg",0)
     for i in I:
-        filename='jean-moral//jean-moral_'+str(i)+'_p.jpg'
-        img = cv2.imread(filename,0)
+        file=filename+'//'+filename+"_"+str(i)+".jpg"
+        img = cv2.imread(file,0)
         l_k=find_key_points(img_base,img)
         H = cv2.findHomography(np.float32(l_k[0]),np.float32(l_k[1]),cv2.RANSAC)[0]
         
@@ -137,9 +136,10 @@ def recalage(show=False):
         if show:
             
             img_f = np.hstack((img,dst,img_base))
-            disp(img_f,"Recalage :" + str(i))
+            disp(img_f,"Recalage : " + str(i),ratio)
             
         L_rec.append(dst)
     return(L_rec)
-        
-recalage(True)
+
+I = [1,2,3,4,5,7,8,9,10,11,12,13]
+recalage("thamar",I,3,True,10)
