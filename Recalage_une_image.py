@@ -121,7 +121,7 @@ def find_key_points(img1,img2):
     return([list_kp1,list_kp2])
     
 
-def recalage(filename,I,base_nb=1,show=False,ratio=2):
+def recalage(filename,I,base_nb=1,show=False,show_compare=False,ratio=2):
     L_rec=[]
     img_base = cv2.imread(filename+'//'+filename+"_"+str(base_nb)+".jpg",0)
     for i in I:
@@ -134,12 +134,17 @@ def recalage(filename,I,base_nb=1,show=False,ratio=2):
         rows,cols = img.shape
         dst = cv2.warpPerspective(img,H_inv,(cols,rows))
         if show:
-            
+
             img_f = np.hstack((img,dst,img_base))
             disp(img_f,"Recalage : " + str(i),ratio)
+            
+        if show_compare:
+            
+            img_fus = cv2.addWeighted(img_base, 0.3, dst, 0.7,0)
+            disp(img_fus,"Recalage : " + str(i),ratio)
             
         L_rec.append(dst)
     return(L_rec)
 
-I = [1,2,3,4,5,7,8,9,10,11,12,13]
-recalage("thamar",I,3,True,10)
+I = [1,2,3,4,5,7]
+recalage("jason",I,3,False,True,4)
