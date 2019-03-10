@@ -11,21 +11,20 @@ import numpy as np
 import cv2
 from scipy import ndimage
 import matplotlib.image as mpimg
+from PIL import Image
 
-img1 = Image.open('jean-moral//jean-moral_6_p.jpg')
-print(img1.mode)
+img1 = 'jean-moral//jean-moral_6_p.jpg'
+img2 = 'jean-moral//jean-moral_5_p.jpg'
 
-(n,m) = img1.size
+def displayWithTransparency(img2, img1, alpha):
+    foreground = Image.open(img1)   
+    background = Image.open(img2)
 
-image = img1
-image.putalpha(50)
-
-foreground = image
-
-background = Image.open('jean-moral//jean-moral_5_p.jpg')
-
-background.paste(foreground, (0, 0), foreground)
-background.show()
+    foreground.putalpha(alpha) #ajout de la transparence
+    
+    background.paste(foreground, (0, 0), foreground)
+    background.show()
 
 
+displayWithTransparency(img2, img1, 50)
 

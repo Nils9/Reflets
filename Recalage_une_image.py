@@ -11,8 +11,8 @@ import cv2
 from scipy import ndimage
 
 #%% Récupérer l'image de base et l'image à recaler
-img1 = cv2.imread('jean-moral//jean-moral_6_p.jpg',0)
-img2 = cv2.imread('jean-moral//jean-moral_2_p.jpg',0)
+img1 = cv2.imread('jean-moral//jean-moral_1.jpg',0)
+img2 = cv2.imread('jean-moral//jean-moral_2.jpg',0)
 N,M = img1.shape
 
 newImage = np.hstack((img1, img2))#hstack et vstack
@@ -26,6 +26,8 @@ def disp(im,title="",ratio=2):
     cv2.destroyAllWindows()
     
 disp(newImage,"Deux images",ratio=4)
+
+
 #%% Identifier les keypoints et les matcher
 
 # Initiate SIFT detector
@@ -148,3 +150,51 @@ def recalage(filename,I,base_nb=1,show=False,show_compare=False,ratio=2):
 
 I = [1,2,3,4,5,7]
 recalage("jason",I,3,False,True,4)
+
+#%% Superposer deux images avec transparence alpha
+from PIL import Image
+
+def displayWithTransparency(background, foreground, alpha):
+
+    foreground.putalpha(alpha) #ajout de la transparence
+    
+    background.paste(foreground, (0, 0), foreground)
+    background.show()
+    
+#%% Recherche du reflet
+import os
+filename = "jean-moral"
+nbImages = len(os.listdir(filename))
+print(nbImages)
+
+def recalage2(filename, numImg):
+    img_base = cv2.imread(filename+'//'+filename+"_1.jpg",0)
+
+    file=filename+'//'+filename+"_"+str(numImg)+".jpg"
+    img = cv2.imread(file,0)
+    
+    l_k=find_key_points(img_base,img)
+    H = cv2.findHomography(np.float32(l_k[0]),np.float32(l_k[1]),cv2.RANSAC)[0]
+        
+    H_inv = np.linalg.inv(H)
+    rows,cols = img.shape
+    dst = cv2.warpPerspective(img,H_inv,(cols,rows))
+    
+    for i in range(rows):
+        for j in range(cols):
+            if(abs(img_base[i][j] - dst[i][j]) > 5):
+                if(img_base[i][j] > dst[i][j]):
+                    img_base[i][j] = 255
+                else:
+                    dst[i][j] = 255
+    background = Image.fromarray(img_base, 'L')
+    background.show()
+    
+    foreground = Image.fromarray(dst, 'L')
+    foreground.show()
+    
+
+    
+                    
+
+recalage2(filename, 2)
