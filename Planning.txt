@@ -1,0 +1,5 @@
+- Avoir un bon recalage : afficher en transparence l'image recalée pour voir si c'est bien
+- Détecter la proportion de reflet sur les images
+Prendre rdv avec Henri Maître : mercredi midi ou jeudi début après-midi
+
+Algorithme du papier
